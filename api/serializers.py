@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import Ingredient, Recipe
+from api.models import Ingredient, Recipe, List
 from django.contrib.auth.models import User
 
 
@@ -10,23 +10,41 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    # n_wins = serializers.IntegerField()
-    # n_games = serializers.IntegerField()
-    # n_ranked = serializers.IntegerField()
-    # n_unranked = serializers.IntegerField()
-    # pct_win = serializers.DecimalField(max_digits=4, decimal_places=2)
+    name = serializers.CharField()
+    unit = serializers.CharField()
+    type = serializers.CharField()
 
     class Meta:
         model = Ingredient
-        fields = ('player_name', 'n_wins', 'n_games', 'n_ranked', 'n_unranked', 'pct_win')
+        fields = ('name', 'unit', 'type')
+
+
+class ListSerializer(serializers.HyperlinkedModelSerializer):
+    recipe = serializers.CharField()
+    ingredient = serializers.CharField()
+    quantity = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        model = List
+        fields = ('recipe', 'ingredient', 'quantity', )
 
 
 class RecipeSerializer(serializers.HyperlinkedModelSerializer):
-    # game_outcome = serializers.IntegerField()
-    # ranked_status = serializers.IntegerField()
-    # ts = serializers.DateTimeField(format='%d %b %Y')
-    # players = serializers.CharField(max_length=1000)
+    name = serializers.CharField()
+    # ingredient = IngredientSerializer(read_only=True, many=True)
+    list = ListSerializer(source='membership_set', many=True)
 
     class Meta:
         model = Recipe
-        fields = ('game_outcome', 'ranked_status', 'ts')
+        fields = ('name', 'list')
+
+# groups = MembershipSerializer(source='membership_set', many=True)
+# class MembershipSerializer(serializers.HyperlinkedModelSerializer):
+#
+#     id = serializers.Field(source='group.id')
+#     name = serializers.Field(source='group.name')
+#
+#     class Meta:
+#         model = Membership
+#
+#         fields = ('id', 'name', 'join_date', )
