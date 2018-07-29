@@ -20,19 +20,18 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class ListSerializer(serializers.HyperlinkedModelSerializer):
-    recipe = serializers.CharField()
-    ingredient = serializers.CharField()
+    ingredient = IngredientSerializer()
     quantity = serializers.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         model = List
-        fields = ('recipe', 'ingredient', 'quantity', )
+        fields = ('ingredient', 'quantity',)
 
 
 class RecipeSerializer(serializers.HyperlinkedModelSerializer):
     name = serializers.CharField()
     # ingredient = IngredientSerializer(read_only=True, many=True)
-    list = ListSerializer(source='membership_set', many=True)
+    list = ListSerializer(source='list_set', many=True)
 
     class Meta:
         model = Recipe
