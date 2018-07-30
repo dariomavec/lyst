@@ -5,8 +5,30 @@ import Table from './components/Table';
 import Navbar from './components/NavBar';
 import { Container, Row, Col } from 'reactstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { Card, Button, CardTitle, CardText } from 'reactstrap';
+import { Card, Button, ButtonGroup, CardTitle, CardText } from 'reactstrap';
 
+function typeNameSort(a, b) {
+    if (a.ingredient.type < b.ingredient.type) {
+        return -1
+    }
+    if (a.ingredient.type > b.ingredient.type) {
+        return +1
+    }
+    if (a.ingredient.name < b.ingredient.name) {
+        return -1;
+    }
+    if (a.ingredient.name > b.ingredient.name) {
+        return +1;
+    }
+    return 0;
+}
+
+function humanizeOutput(row) {
+    return row.quantity + ' x ' +
+           row.ingredient.name +
+           (row.ingredient.unit !== '' ? ' (' + row.ingredient.unit + ')' : '') +
+           '\n'
+}
 
 class App extends Component {
     constructor(props) {
@@ -15,8 +37,8 @@ class App extends Component {
 		  loading: true,
 		  error: null,
 		  recipes: [],
-		  current_recipe: '',
 		  ingredients: [],
+		  current_recipe: '',
 		  shopping_list_recipes: [],
 		  shopping_list_data: [],
 		  shopping_list_output: '',
@@ -24,7 +46,6 @@ class App extends Component {
 		};
 		this.baseURL = "http://localhost:8080/";
 		this.handleDropdown = this.handleDropdown.bind(this);
-		this.handleAddToList = this.handleAddToList.bind(this);
 	}
 
 	handleDropdown(recipeName) {
@@ -34,10 +55,49 @@ class App extends Component {
 			(result) => {
               let ingredients = result[0].list;
 
-              this.setState({
-				ingredients,
-				current_recipe: recipeName
-			})},
+                // Aggregate all ingredients into a single list
+                const { shopping_list_recipes } = this.state;
+                let temp = {}, shopping_list_data = [];
+                function aggAddData(d, type) {
+                    if(temp.hasOwnProperty(d.ingredient.name)) {
+                       temp[d.ingredient.name].quantity += d.quantity;
+                    } else {
+                       temp[d.ingredient.name] = {unit: d.ingredient.unit, type: d.ingredient.type, quantity: d.quantity};
+                    }
+                }
+                function aggSubtractData(d, type) {
+                    if(temp.hasOwnProperty(d.ingredient.name)) {
+                       temp[d.ingredient.name].quantity -= d.quantity;
+                    } else {
+                       temp[d.ingredient.name] = {unit: d.ingredient.unit, type: d.ingredient.type, quantity: d.quantity};
+                    }
+                }
+                this.state.shopping_list_data.forEach(aggAddData);
+
+                let ind = this.state.shopping_list_recipes.indexOf(recipeName)
+                if (ind === -1) {
+                    ingredients.forEach(aggAddData);
+                    shopping_list_recipes.push(recipeName);
+                } else {
+                    ingredients.forEach(aggSubtractData);
+                    shopping_list_recipes.splice(ind, 1);
+                }
+
+                for(var prop in temp) {
+                    shopping_list_data.push({ingredient: {name: prop, unit: temp[prop].unit, type: temp[prop].type},
+                                             quantity: temp[prop].quantity});
+                }
+                // Sort list based on Type then Name
+                shopping_list_data = shopping_list_data.sort(typeNameSort).filter(item => item.quantity !== 0)
+
+                this.setState({
+                    shopping_list_recipes,
+                    shopping_list_data,
+                    shopping_list_output: shopping_list_data.map(humanizeOutput).join(''),
+                    ingredients,
+                    current_recipe: recipeName
+                });
+              },
 			// Note: it's important to handle errors here
 			// instead of a catch() block so that we don't swallow
 			// exceptions from actual bugs in components.
@@ -47,59 +107,6 @@ class App extends Component {
 			  });
 			}
 		  )
-	}
-
-	handleAddToList(event) {
-	    if(this.state.current_recipe !== '') {
-            function aggregateData(d) {
-                if(temp.hasOwnProperty(d.ingredient.name)) {
-                   temp[d.ingredient.name].quantity = temp[d.ingredient.name].quantity + d.quantity;
-                } else {
-                   temp[d.ingredient.name] = {unit: d.ingredient.unit, type: d.ingredient.type, quantity: d.quantity};
-                }
-            }
-
-            let temp = {}, shopping_list_data = [];
-            this.state.shopping_list_data.forEach(aggregateData);
-            this.state.ingredients.forEach(aggregateData);
-            for(var prop in temp) {
-                shopping_list_data.push({ingredient: {name: prop, unit: temp[prop].unit, type: temp[prop].type},
-                                         quantity: temp[prop].quantity});
-            }
-            function typeNameSort(a, b) {
-                if (a.ingredient.type < b.ingredient.type) {
-                    return -1
-                }
-                if (a.ingredient.type > b.ingredient.type) {
-                    return +1
-                }
-                if (a.ingredient.name < b.ingredient.name) {
-                    return -1;
-                }
-                if (a.ingredient.name > b.ingredient.name) {
-                    return +1;
-                }
-                return 0;
-            }
-
-            shopping_list_data = shopping_list_data.sort(typeNameSort)
-
-            let shopping_list_recipes = this.state.shopping_list_recipes;
-            shopping_list_recipes.push(this.state.current_recipe);
-
-            function humanizeOutput(row) {
-                return row.quantity + ' x ' +
-                       row.ingredient.name +
-                       (row.ingredient.unit !== '' ? ' (' + row.ingredient.unit + ')' : '') +
-                       '\n'
-            }
-
-            this.setState({
-                shopping_list_recipes,
-                shopping_list_data,
-                shopping_list_output: shopping_list_data.map(humanizeOutput).join('')
-            });
-        }
 	}
 
     componentDidMount() {
@@ -157,40 +164,36 @@ class App extends Component {
             <Row><br/></Row>
             <Row>
                 <Col>
-                <Dropdown
-                    items={recipes}
-                    title='Recipes'
-                    onDropdownChange={this.handleDropdown}/>
-                </Col>
-                <Col>
-                <Button outline color="primary"
-                    onClick={this.handleAddToList}>
-                    Add to list
-                </Button>
-                </Col>
-
-            </Row>
-            <Row><br/></Row>
-            <Row>
-                <Col>
-                    <h1>{current_recipe}</h1>
-                    {table}
-                </Col>
-                <Col>
-                  <Card body inverse style={{ backgroundColor: '#333', borderColor: '#333' }}>
-                    <CardTitle>Shopping List</CardTitle>
-                    <CardText>
                     <CopyToClipboard
-                        text={shopping_list_output}
+                        text={shopping_list_recipes.join('\n') + '\n' + shopping_list_output}
                         onCopy={() => this.setState({copied: true})}>
                         <Button color="success">Copy</Button>
-                    </CopyToClipboard><br/>
+                    </CopyToClipboard>
+                    <br/><br/>
+
+                    <ButtonGroup vertical>
+                      {recipes.map((recipe) => {
+                        return <Button color="primary" onClick={() => this.handleDropdown(recipe)} active={this.state.shopping_list_recipes.includes(recipe)}>{recipe}</Button>
+                      })}
+                    </ButtonGroup>
+                </Col>
+                <Col>
+                  <Card body outline color="secondary">
+                    <CardTitle>Shopping List</CardTitle>
+                    <CardText>
                     {shopping_list_recipes.map((item, key) => {
                           return <span key={key}><strong>{item}</strong><br/></span>})}
                     {shopping_list_output.split('\n').map((item, key) => {
                           return <span key={key}>{item}<br/></span>})}
                     </CardText>
                   </Card>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <br/>
+                    <h1>{current_recipe}</h1>
+                    {table}
                 </Col>
             </Row>
         </Container>
