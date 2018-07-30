@@ -173,7 +173,7 @@ class App extends Component {
 
                     <ButtonGroup vertical>
                       {recipes.map((recipe) => {
-                        return <Button color="primary" onClick={() => this.handleDropdown(recipe)} active={this.state.shopping_list_recipes.includes(recipe)}>{recipe}</Button>
+                        return <Button outline color="primary" onClick={() => this.handleDropdown(recipe)} active={this.state.shopping_list_recipes.includes(recipe)}>{recipe}</Button>
                       })}
                     </ButtonGroup>
                 </Col>
