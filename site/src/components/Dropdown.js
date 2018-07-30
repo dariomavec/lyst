@@ -28,8 +28,6 @@ export default class SimpleDropdown extends React.Component {
 
   render() {
     const { title, items } = this.props;
-    console.log(items);
-
     return (
       <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
         <DropdownToggle caret>
