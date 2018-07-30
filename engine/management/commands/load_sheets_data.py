@@ -4,7 +4,7 @@ import pandas as pd
 from api.models import Ingredient, Recipe, List
 
 SPREADSHEET_ID = '1eOi0MZdR9u8lhE9Z47NLaAs8It-6bLApPo4Xg5fBTms'
-RANGE_NAME = 'Recipes!B3:N69'
+RANGE_NAME = 'Recipes!B3:AA69'
 
 
 def load_ingredient_from_dict(d):
