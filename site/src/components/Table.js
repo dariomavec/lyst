@@ -4,7 +4,7 @@ import { Table } from 'reactstrap';
 export default class SimpleTable extends React.Component {
   render() {
     return (
-      <Table light='true'>
+      <Table light className='table-sm'>
         <thead>
           <tr key='header'>
             {this.props.header.map((val, key) => <th key={key}>{val}</th>)}

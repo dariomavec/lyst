@@ -164,13 +164,6 @@ class App extends Component {
             <Row><br/></Row>
             <Row>
                 <Col>
-                    <CopyToClipboard
-                        text={shopping_list_recipes.join('\n') + '\n' + shopping_list_output}
-                        onCopy={() => this.setState({copied: true})}>
-                        <Button color="success">Copy</Button>
-                    </CopyToClipboard>
-                    <br/><br/>
-
                     <ButtonGroup vertical>
                       {recipes.map((recipe) => {
                         return <Button outline color="primary" onClick={() => this.handleDropdown(recipe)} active={this.state.shopping_list_recipes.includes(recipe)}>{recipe}</Button>
@@ -178,13 +171,34 @@ class App extends Component {
                     </ButtonGroup>
                 </Col>
                 <Col>
+                    <CopyToClipboard
+                        text={shopping_list_output}
+                        onCopy={() => this.setState({copied: true})}>
+                        <Button color="secondary">Copy List</Button>
+                    </CopyToClipboard>
+                    <br/><br/>
+
                   <Card body outline color="secondary">
                     <CardTitle>Shopping List</CardTitle>
                     <CardText>
-                    {shopping_list_recipes.map((item, key) => {
-                          return <span key={key}><strong>{item}</strong><br/></span>})}
                     {shopping_list_output.split('\n').map((item, key) => {
                           return <span key={key}>{item}<br/></span>})}
+                    </CardText>
+                  </Card>
+                </Col>
+                <Col>
+                    <CopyToClipboard
+                        text={shopping_list_recipes.join('\n')}
+                        onCopy={() => this.setState({copied: true})}>
+                        <Button color="warning">Copy Menu</Button>
+                    </CopyToClipboard>
+                    <br/><br/>
+
+                  <Card body outline color="warning">
+                    <CardTitle>Menu</CardTitle>
+                    <CardText>
+                    {shopping_list_recipes.map((item, key) => {
+                          return <span key={key}><strong>{item}</strong><br/></span>})}
                     </CardText>
                   </Card>
                 </Col>
@@ -192,9 +206,10 @@ class App extends Component {
             <Row>
                 <Col>
                     <br/>
-                    <h1>{current_recipe}</h1>
+                    <h3>{current_recipe}</h3>
                     {table}
                 </Col>
+                <Col/><Col/>
             </Row>
         </Container>
       </div>
