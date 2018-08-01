@@ -27,3 +27,12 @@ class List(models.Model):
 
     def __str__(self):
         return str((self.recipe, self.ingredient, self.quantity))
+
+
+class Procedure(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    step_id = models.IntegerField()
+    step_details = models.CharField(max_length=5000, default='')
+
+    def __str__(self):
+        return str((self.recipe, self.step_id, self.step_details))

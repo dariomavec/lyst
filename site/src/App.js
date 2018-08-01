@@ -42,13 +42,14 @@ class App extends Component {
 		  shopping_list_recipes: [],
 		  shopping_list_data: [],
 		  shopping_list_output: '',
+		  procedure: [],
 		  copied: false
 		};
 		this.baseURL = "http://localhost:8080/";
-		this.handleDropdown = this.handleDropdown.bind(this);
+		this.handleButtonClick = this.handleButtonClick.bind(this);
 	}
 
-	handleDropdown(recipeName) {
+	handleButtonClick(recipeName) {
 	    fetch(this.baseURL + "recipe.json?name=" + encodeURIComponent(recipeName))
 		  .then(res => res.json())
 		  .then(
@@ -107,6 +108,26 @@ class App extends Component {
 			  });
 			}
 		  )
+
+		fetch(this.baseURL + "procedure.json?recipe=" + encodeURIComponent(recipeName))
+		  .then(res => res.json())
+		  .then(
+			(result) => {
+              let procedure = result;
+
+                this.setState({
+                    procedure
+                });
+              },
+			// Note: it's important to handle errors here
+			// instead of a catch() block so that we don't swallow
+			// exceptions from actual bugs in components.
+			(error) => {
+			  this.setState({
+				error
+			  });
+			}
+		  )
 	}
 
     componentDidMount() {
@@ -136,7 +157,7 @@ class App extends Component {
 	  }
 
   render() {
-    const { loading, error, recipes, ingredients, shopping_list_output, shopping_list_recipes, current_recipe } = this.state;
+    const { loading, error, recipes, ingredients, shopping_list_output, shopping_list_recipes, current_recipe, procedure } = this.state;
 
     if (error) {
       return <div>Error: {error.message}</div>;
@@ -145,16 +166,26 @@ class App extends Component {
       return <div>Loading...</div>;
     }
 
-    let table;
+    let ingredient_table, procedure_table;
     if (ingredients) {
-        table =  <Table
+        ingredient_table =  <Table
             header={['Quantity','Name','Unit']}
             rows={ingredients.map((i) =>
                             [i.quantity,
                              i.ingredient.name,
                              i.ingredient.unit])} />;
     } else {
-        table = '';
+        ingredient_table = '';
+    }
+
+    if (procedure) {
+        procedure_table =  <Table
+            header={['#','Step']}
+            rows={procedure.map((i) =>
+                            [i.step_id,
+                             i.step_details])} />;
+    } else {
+        procedure_table = '';
     }
 
     return (
@@ -166,7 +197,7 @@ class App extends Component {
                 <Col>
                     <ButtonGroup vertical>
                       {recipes.map((recipe) => {
-                        return <Button outline color="primary" onClick={() => this.handleDropdown(recipe)} active={this.state.shopping_list_recipes.includes(recipe)}>{recipe}</Button>
+                        return <Button outline color="primary" onClick={() => this.handleButtonClick(recipe)} active={this.state.shopping_list_recipes.includes(recipe)}>{recipe}</Button>
                       })}
                     </ButtonGroup>
                 </Col>
@@ -199,17 +230,21 @@ class App extends Component {
                     <CardText>
                     {shopping_list_recipes.map((item, key) => {
                           return <span key={key}><strong>{item}</strong><br/></span>})}
+                    <br/>
                     </CardText>
                   </Card>
                 </Col>
             </Row>
             <Row>
+            <h3>{current_recipe}</h3>
+            </Row>
+            <Row>
                 <Col>
-                    <br/>
-                    <h3>{current_recipe}</h3>
-                    {table}
+                    {ingredient_table}
                 </Col>
-                <Col/><Col/>
+                <Col>
+                    {procedure_table}
+                </Col>
             </Row>
         </Container>
       </div>
