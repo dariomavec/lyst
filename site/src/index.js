@@ -5,13 +5,21 @@ import {BrowserRouter} from 'react-router-dom'
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import createBrowserHistory from 'history/createBrowserHistory';
 
-import Cook from './Cook';
-import AddRecipe from './AddRecipe';
-import List from './List';
+import Cook from './list/Cook';
+import AddRecipe from './list/AddRecipe';
+import List from './list/List';
+
+import createBrowserHistory from 'history/createBrowserHistory';
+import WebFont from 'webfontloader';
 
 const history = createBrowserHistory()
+
+WebFont.load({
+  google: {
+    families: ['Proza Libre:300,400,700', 'sans-serif']
+  }
+});
 
 ReactDOM.render(
     <BrowserRouter history={history}>

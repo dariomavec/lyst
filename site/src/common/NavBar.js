@@ -37,7 +37,7 @@ export default class NavBar extends React.Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>				
 				  {this.props.links.map(function(listValue, i){
-					return <NavItem key={i}> <NavLink href={listValue[1].toString()} className="nav-item"><h1>{listValue[0]}</h1></NavLink></NavItem>;
+					return <NavItem key={i}> <NavLink href={listValue[1].toString()} className="nav-item"><h4>{listValue[0]}</h4></NavLink></NavItem>;
 				  })}          
             </Nav>
           </Collapse>

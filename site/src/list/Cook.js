@@ -1,31 +1,14 @@
 import React, { Component } from 'react';
-import './App.css';
-import Dropdown from './components/Dropdown';
-import Table from './components/Table';
-import Navbar from './components/NavBar';
+import './List.css';
+import Dropdown from '../common/Dropdown';
+import Table from '../common/Table';
+import Navbar from '../common/NavBar';
 import { Container, Row, Col } from 'reactstrap';
 
-function typeNameSort(a, b) {
-    if (a.ingredient.type < b.ingredient.type) {
-        return -1
-    }
-    if (a.ingredient.type > b.ingredient.type) {
-        return +1
-    }
-    if (a.ingredient.name < b.ingredient.name) {
-        return -1;
-    }
-    if (a.ingredient.name > b.ingredient.name) {
-        return +1;
-    }
-    return 0;
-}
-
 function humanizeOutput(row) {
-    return row.quantity + ' x ' +
+    return [row.quantity + ' x ' +
            row.ingredient.name +
-           (row.ingredient.unit !== '' ? ' (' + row.ingredient.unit + ')' : '') +
-           '\n'
+           (row.ingredient.unit !== '' ? ' (' + row.ingredient.unit + ')' : '')]
 }
 
 class Cook extends Component {
@@ -50,6 +33,7 @@ class Cook extends Component {
 			(result) => {
               let ingredients = result[0].list;
 
+                console.log(ingredients.map(humanizeOutput))
                 this.setState({
                     ingredients,
                     current_recipe: recipeName
@@ -125,11 +109,8 @@ class Cook extends Component {
     let ingredient_table, procedure_table;
     if (ingredients) {
         ingredient_table =  <Table
-            header={['Quantity','Name','Unit']}
-            rows={ingredients.map((i) =>
-                            [i.quantity,
-                             i.ingredient.name,
-                             i.ingredient.unit])} />;
+            header={['Ingredients']}
+            rows={ingredients.map(humanizeOutput)} />;
     } else {
         ingredient_table = '';
     }
@@ -158,13 +139,13 @@ class Cook extends Component {
                 </Col>
             </Row>
             <Row>
-            <h3>{current_recipe}</h3>
+            <h1>{current_recipe}</h1>
             </Row>
             <Row>
-                <Col>
+                <Col className='col-3'>
                     {ingredient_table}
                 </Col>
-                <Col>
+                <Col className='col-9'>
                     {procedure_table}
                 </Col>
             </Row>

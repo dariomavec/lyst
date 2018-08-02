@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import './App.css';
-import Navbar from './components/NavBar';
+import './List.css';
+import Navbar from '../common/NavBar';
 import { Container, Row, Col } from 'reactstrap';
 
 class AddRecipe extends Component {
