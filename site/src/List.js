@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import Dropdown from './components/Dropdown';
 import Table from './components/Table';
 import Navbar from './components/NavBar';
 import { Container, Row, Col } from 'reactstrap';
@@ -30,7 +29,7 @@ function humanizeOutput(row) {
            '\n'
 }
 
-class App extends Component {
+class List extends Component {
     constructor(props) {
 		super(props);
 		this.state = {
@@ -38,11 +37,9 @@ class App extends Component {
 		  error: null,
 		  recipes: [],
 		  ingredients: [],
-		  current_recipe: '',
 		  shopping_list_recipes: [],
 		  shopping_list_data: [],
 		  shopping_list_output: '',
-		  procedure: [],
 		  copied: false
 		};
 		this.baseURL = "http://localhost:8080/";
@@ -95,8 +92,7 @@ class App extends Component {
                     shopping_list_recipes,
                     shopping_list_data,
                     shopping_list_output: shopping_list_data.map(humanizeOutput).join(''),
-                    ingredients,
-                    current_recipe: recipeName
+                    ingredients
                 });
               },
 			// Note: it's important to handle errors here
@@ -166,31 +162,9 @@ class App extends Component {
       return <div>Loading...</div>;
     }
 
-    let ingredient_table, procedure_table;
-    if (ingredients) {
-        ingredient_table =  <Table
-            header={['Quantity','Name','Unit']}
-            rows={ingredients.map((i) =>
-                            [i.quantity,
-                             i.ingredient.name,
-                             i.ingredient.unit])} />;
-    } else {
-        ingredient_table = '';
-    }
-
-    if (procedure) {
-        procedure_table =  <Table
-            header={['#','Step']}
-            rows={procedure.map((i) =>
-                            [i.step_id,
-                             i.step_details])} />;
-    } else {
-        procedure_table = '';
-    }
-
     return (
       <div>
-        <Navbar brand='lyst' links={[]}/ >
+        <Navbar brand='lyst' links={[['List', '/list'], ['Add', '/add'], ['Cook', '/cook']]}/ >
         <Container>
             <Row><br/></Row>
             <Row>
@@ -235,21 +209,10 @@ class App extends Component {
                   </Card>
                 </Col>
             </Row>
-            <Row>
-            <h3>{current_recipe}</h3>
-            </Row>
-            <Row>
-                <Col>
-                    {ingredient_table}
-                </Col>
-                <Col>
-                    {procedure_table}
-                </Col>
-            </Row>
         </Container>
       </div>
     );
   }
 }
 
-export default App;
+export default List;
