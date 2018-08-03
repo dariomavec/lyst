@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './List.css';
 import Navbar from '../common/NavBar';
+import DynamicForm from '../common/DynamicForm'
 import { Container, Row, Col } from 'reactstrap';
 
 class AddRecipe extends Component {
@@ -58,7 +59,7 @@ class AddRecipe extends Component {
             </Row>
             <Row>
                 <Col>
-                    {ingredients.map(i => <span>{i.name + '|#|' + i.unit + '|#|' + i.type}<br/></span>)}
+                    <DynamicForm inputList={ingredients.map(i => i.name)}/>
                 </Col>
             </Row>
         </Container>

@@ -211,7 +211,6 @@ class List extends Component {
                     <CardText>
                     {shoppingList.recipes.map((item, key) => {
                           return <span key={key}><strong>{item}</strong><br/></span>})}
-                    <br/>
                     </CardText>
                   </Card>
                 </Col>

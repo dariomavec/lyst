@@ -10,10 +10,8 @@ import Cook from './list/Cook';
 import AddRecipe from './list/AddRecipe';
 import List from './list/List';
 
-import createBrowserHistory from 'history/createBrowserHistory';
 import WebFont from 'webfontloader';
 
-const history = createBrowserHistory()
 
 WebFont.load({
   google: {
@@ -22,7 +20,7 @@ WebFont.load({
 });
 
 ReactDOM.render(
-    <BrowserRouter history={history}>
+    <BrowserRouter>
             <Switch>
             <Route path="/cook" component={Cook}/>
             <Route path="/add" component={AddRecipe}/>

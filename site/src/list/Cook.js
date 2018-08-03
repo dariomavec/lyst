@@ -18,8 +18,8 @@ class Cook extends Component {
 		  loading: true,
 		  error: null,
 		  recipes: [],
+		  currentRecipe: '',
 		  ingredients: [],
-		  current_recipe: '',
 		  procedure: []
 		};
 		this.baseURL = "http://localhost:8080/";
@@ -36,7 +36,7 @@ class Cook extends Component {
                 console.log(ingredients.map(humanizeOutput))
                 this.setState({
                     ingredients,
-                    current_recipe: recipeName
+                    currentRecipe: recipeName
                 });
               },
 			// Note: it's important to handle errors here
@@ -97,7 +97,7 @@ class Cook extends Component {
 	  }
 
   render() {
-    const { loading, error, recipes, ingredients, current_recipe, procedure } = this.state;
+    const { loading, error, recipes, ingredients, currentRecipe, procedure } = this.state;
 
     if (error) {
       return <div>Error: {error.message}</div>;
@@ -139,7 +139,7 @@ class Cook extends Component {
                 </Col>
             </Row>
             <Row>
-            <h1>{current_recipe}</h1>
+            <h1>{currentRecipe}</h1>
             </Row>
             <Row>
                 <Col className='col-3'>
