@@ -127,7 +127,7 @@ class Cook extends Component {
 
     return (
       <div>
-        <Navbar brand='lyst' links={[['List', '/list'], ['Add', '/add'], ['Cook', '/cook']]}/ >
+        <Navbar brand='lyst' links={[['List', '/list'], ['Cook', '/cook']]}/ >
         <Container>
             <Row>
                 <Col>

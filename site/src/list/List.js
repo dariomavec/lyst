@@ -4,6 +4,7 @@ import Navbar from '../common/NavBar';
 import { Container, Row, Col } from 'reactstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { Card, Button, ButtonGroup, CardTitle, CardText } from 'reactstrap';
+import MultiDropdown from '../common/MultiDropdown';
 
 function typeNameSort(a, b) {
     if (a.ingredient.type < b.ingredient.type) {
@@ -43,10 +44,30 @@ class List extends Component {
 		  copied: false
 		};
 		this.baseURL = "http://localhost:8080/";
-		this.handleButtonClick = this.handleButtonClick.bind(this);
+		this.handleMultiDropdownChange = this.handleMultiDropdownChange.bind(this);
 	}
 
-	handleButtonClick(recipeName) {
+    handleMultiDropdownChange(value) {
+        let recipeList = value.map(i => i.value);
+
+        if(recipeList.length === 0) {
+            this.setState({
+                shoppingList: {
+                    data: [],
+                    recipes: [],
+                    ingredients: []
+                  }
+            })
+
+            return
+        }
+
+        // New Recipe
+        let newRecipe = recipeList.filter(o1 => this.state.shoppingList.recipes.every(o2 => o1 !== o2))[0];
+        // Removed Recipe
+        let removedRecipe = this.state.shoppingList.recipes.filter(o1 => recipeList.every(o2 => o1 !== o2))[0];
+        let recipeName = newRecipe ? newRecipe : removedRecipe;
+
 	    fetch(this.baseURL + "recipe.json?name=" + encodeURIComponent(recipeName))
 		  .then(res => res.json())
 		  .then(
@@ -105,27 +126,7 @@ class List extends Component {
 			  });
 			}
 		  )
-
-		fetch(this.baseURL + "procedure.json?recipe=" + encodeURIComponent(recipeName))
-		  .then(res => res.json())
-		  .then(
-			(result) => {
-              let procedure = result;
-
-                this.setState({
-                    procedure
-                });
-              },
-			// Note: it's important to handle errors here
-			// instead of a catch() block so that we don't swallow
-			// exceptions from actual bugs in components.
-			(error) => {
-			  this.setState({
-				error
-			  });
-			}
-		  )
-	}
+    }
 
     componentDidMount() {
         this.setState({
@@ -165,23 +166,18 @@ class List extends Component {
 
     return (
       <div>
-        <Navbar brand='lyst' links={[['List', '/list'], ['Add', '/add'], ['Cook', '/cook']]}/ >
+        <Navbar brand='lyst' links={[['List', '/list'], ['Cook', '/cook']]}/ >
         <Container>
-            <Row><br/></Row>
             <Row>
                 <Col>
-                    <ButtonGroup vertical>
-                      {recipes.map((recipe) => {
-                        return <Button
-                                    outline
-                                    color="primary"
-                                    onClick={() => this.handleButtonClick(recipe)}
-                                    active={shoppingList.recipes.includes(recipe)}>
-                                    {recipe}
-                               </Button>
-                      })}
-                    </ButtonGroup>
+                    <br/>
+                    <MultiDropdown
+                        items={recipes.map((i) => ({value: i, label: i}))}
+                        onMultiDropdownChange={this.handleMultiDropdownChange}/>
+                    <br/>
                 </Col>
+            </Row>
+            <Row>
                 <Col>
                     <CopyToClipboard
                         text={shoppingList.ingredients.join('\n')}

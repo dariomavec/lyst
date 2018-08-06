@@ -7,7 +7,6 @@ import registerServiceWorker from './registerServiceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Cook from './list/Cook';
-import AddRecipe from './list/AddRecipe';
 import List from './list/List';
 
 import WebFont from 'webfontloader';
@@ -23,7 +22,6 @@ ReactDOM.render(
     <BrowserRouter>
             <Switch>
             <Route path="/cook" component={Cook}/>
-            <Route path="/add" component={AddRecipe}/>
             <Route path="/" component={List}/>
         </Switch>
     </BrowserRouter>,
